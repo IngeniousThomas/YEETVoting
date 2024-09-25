@@ -1,257 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Varun Voting</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
 
-        #lobby-container, #names-container, #controls, #admin-controls, #timer {
-            margin: 20px;
-        }
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.13.2/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.13.2/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-        .name {
-            display: inline-block;
-            margin: 10px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: font-size 0.3s;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .winner {
-            font-weight: bold;
-            font-size: 40px;
-            color: green;
-        }
-
-        .disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
-        }
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
     </style>
-</head>
-<body>
-
-    <h1>Team Varun Voting</h1>
-
-    <!-- Input for joining -->
-    <div id="join-section">
-        <p>Please enter your name:</p>
-        <input type="text" id="nameInput" placeholder="Enter your name">
-        <button onclick="joinLobby()">Join</button>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
     </div>
-
-    <!-- Lobby for participants -->
-    <div id="lobby-container" class="hidden">
-        <h3>Waiting for admin to start the voting...</h3>
-        <p id="lobby-players"></p>
-    </div>
-
-    <!-- Admin controls -->
-    <div id="admin-controls" class="hidden">
-        <h3>Admin Controls</h3>
-        <button onclick="startNextQuestion()">Start Next Question</button>
-        <div id="lobby-admin-view"></div>
-    </div>
-
-    <!-- Container for displaying names during voting -->
-    <div id="names-container" class="hidden"></div>
-
-    <!-- Timer -->
-    <div id="timer" class="hidden"></div>
-
-    <!-- Question Display -->
-    <div id="question-container" class="hidden">
-        <h3 id="current-question"></h3>
-    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
-        const fixedNames = [
-            "Sushmita Dasari",
-            "Eshita Purohit",
-            "Dawood Mohammed",
-            "Pavani Prathyusha Kavuri",
-            "Deepak Kumar MS",
-            "Indraj Singh",
-            "Praisey Rose",
-            "Pravara Sripuram",
-            "Akhil Varma",
-            "Siga Prakash Pranay",
-            "Harsha Thalamarla",
-            "Anagha Taranikanti"
-        ];
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-        const questions = [
-            "What's your name?",
-            "What's your age?",
-            "What's your favorite animal?",
-            "What's your favorite food?"
-        ];
-
-        let currentQuestionIndex = 0;
-        let participants = [];
-        let votes = {};
-        let votingActive = false;
-        let hasVoted = {};
-        let votingInterval;
-        let isQuestionActive = false;
-
-        // Admin password for controlling the voting
-        const adminPassword = "admin123"; // You can change this as needed
-
-        function joinLobby() {
-            const name = document.getElementById("nameInput").value.trim();
-            if (name) {
-                participants.push(name);
-                document.getElementById("join-section").classList.add("hidden");
-                document.getElementById("lobby-container").classList.remove("hidden");
-
-                // Show participants in the lobby to the admin
-                updateLobby();
-            }
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
-
-        function updateLobby() {
-            const lobbyPlayers = document.getElementById("lobby-players");
-            lobbyPlayers.innerHTML = participants.join(', ');
-
-            const adminView = document.getElementById("lobby-admin-view");
-            adminView.innerHTML = "Players in Lobby: " + participants.join(', ');
-
-            // Only show admin controls if admin is logged in
-            const adminPasswordInput = prompt("Enter admin password to control voting (if admin)");
-            if (adminPasswordInput === adminPassword) {
-                document.getElementById("admin-controls").classList.remove("hidden");
-            }
-        }
-
-        function startNextQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                alert("All questions have been completed!");
-                return;
-            }
-
-            votingActive = true;
-            isQuestionActive = true;
-
-            // Show the current question
-            document.getElementById("question-container").classList.remove("hidden");
-            document.getElementById("current-question").innerText = questions[currentQuestionIndex];
-
-            // Hide lobby and admin controls, show the names container
-            document.getElementById("lobby-container").classList.add("hidden");
-            document.getElementById("admin-controls").classList.add("hidden");
-            document.getElementById("names-container").classList.remove("hidden");
-            document.getElementById("timer").classList.remove("hidden");
-
-            // Initialize votes and display names
-            fixedNames.forEach(name => {
-                votes[name] = 0;
-                hasVoted[name] = false;
-                const nameElement = document.createElement("div");
-                nameElement.className = "name";
-                nameElement.id = name;
-                nameElement.innerText = name;
-                nameElement.onclick = () => vote(name);
-                document.getElementById("names-container").appendChild(nameElement);
-            });
-
-            // Start voting timer
-            let timeLeft = 100; // 100 seconds
-            votingInterval = setInterval(() => {
-                document.getElementById("timer").innerText = `Time Left: ${timeLeft--}s`;
-
-                if (timeLeft < 0) {
-                    clearInterval(votingInterval);
-                    endVoting();
-                }
-            }, 1000);
-        }
-
-        function vote(person) {
-            if (votingActive && isQuestionActive && !hasVoted[person]) {
-                votes[person] += 1;
-                hasVoted[person] = true;
-                updateFontSize(person);
-                disableVoting();
-            } else if (hasVoted[person]) {
-                alert("You have already voted!");
-            }
-        }
-
-        function disableVoting() {
-            const nameElements = document.querySelectorAll(".name");
-            nameElements.forEach(element => {
-                if (!hasVoted[element.id]) {
-                    element.classList.add("disabled");
-                    element.onclick = null; // Disable click event
-                }
-            });
-        }
-
-        function updateFontSize(person) {
-            const element = document.getElementById(person);
-            const newSize = 16 + votes[person] * 5; // Increase font size based on votes
-            element.style.fontSize = newSize + "px";
-        }
-
-        function endVoting() {
-            votingActive = false;
-            isQuestionActive = false;
-            document.getElementById("timer").classList.add("hidden");
-
-            // Find the name with the highest votes
-            let maxVotes = -1;
-            let winner = "";
-            for (let name in votes) {
-                if (votes[name] > maxVotes) {
-                    maxVotes = votes[name];
-                    winner = name;
-                }
-            }
-
-            // Highlight the winner
-            const winnerElement = document.getElementById(winner);
-            winnerElement.classList.add("winner");
-
-            // Reset sizes after 5 seconds and prepare for the next question
-            setTimeout(() => {
-                resetVoting();
-                currentQuestionIndex++;
-                if (currentQuestionIndex < questions.length) {
-                    document.getElementById("admin-controls").classList.remove("hidden");
-                }
-            }, 5000);
-        }
-
-        function resetVoting() {
-            for (let name in votes) {
-                votes[name] = 0;
-                hasVoted[name] = false;
-                const nameElement = document.getElementById(name);
-                nameElement.style.fontSize = "16px";
-                nameElement.classList.remove("winner");
-                nameElement.classList.remove("disabled"); // Enable voting again
-                nameElement.onclick = () => vote(name); // Restore click event
-            }
-
-            // Prepare for the next round
-            document.getElementById("names-container").innerHTML = "";
-            document.getElementById("names-container").classList.add("hidden");
-            document.getElementById("question-container").classList.add("hidden");
-        }
+      });
     </script>
-
-</body>
+  </body>
 </html>
