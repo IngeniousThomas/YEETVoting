@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#nameList {
+    margin: 20px;
+}
+
+#nameList div {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    transition: font-size 0.2s;
+}

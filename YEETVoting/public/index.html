@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YEETVoting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Welcome to YEETVoting</h1>
+    <div id="lobby">
+        <h2>Please enter your name:</h2>
+        <input type="text" id="nameInput">
+        <button onclick="joinLobby()">Join Lobby</button>
+    </div>
+    <div id="votingArea" style="display:none;">
+        <h2>Current Question: <span id="questionText"></span></h2>
+        <div id="nameList"></div>
+        <div id="timer">Time Left: 60s</div>
+        <button id="nextQuestionBtn" style="display:none;" onclick="startNextQuestion()">Next Question</button>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
