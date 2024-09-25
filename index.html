@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Varun Voting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #lobby-container, #names-container, #controls, #admin-controls, #timer {
+            margin: 20px;
+        }
+
+        .name {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: font-size 0.3s;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .winner {
+            font-weight: bold;
+            font-size: 40px;
+            color: green;
+        }
+
+        .disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Team Varun Voting</h1>
+
+    <!-- Input for joining -->
+    <div id="join-section">
+        <p>Please enter your name:</p>
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <button onclick="joinLobby()">Join</button>
+    </div>
+
+    <!-- Lobby for participants -->
+    <div id="lobby-container" class="hidden">
+        <h3>Waiting for admin to start the voting...</h3>
+        <p id="lobby-players"></p>
+    </div>
+
+    <!-- Admin controls -->
+    <div id="admin-controls" class="hidden">
+        <h3>Admin Controls</h3>
+        <button onclick="startNextQuestion()">Start Next Question</button>
+        <div id="lobby-admin-view"></div>
+    </div>
+
+    <!-- Container for displaying names during voting -->
+    <div id="names-container" class="hidden"></div>
+
+    <!-- Timer -->
+    <div id="timer" class="hidden"></div>
+
+    <!-- Question Display -->
+    <div id="question-container" class="hidden">
+        <h3 id="current-question"></h3>
+    </div>
+
+    <script>
+        const fixedNames = [
+            "Sushmita Dasari",
+            "Eshita Purohit",
+            "Dawood Mohammed",
+            "Pavani Prathyusha Kavuri",
+            "Deepak Kumar MS",
+            "Indraj Singh",
+            "Praisey Rose",
+            "Pravara Sripuram",
+            "Akhil Varma",
+            "Siga Prakash Pranay",
+            "Harsha Thalamarla",
+            "Anagha Taranikanti"
+        ];
+
+        const questions = [
+            "What's your name?",
+            "What's your age?",
+            "What's your favorite animal?",
+            "What's your favorite food?"
+        ];
+
+        let currentQuestionIndex = 0;
+        let participants = [];
+        let votes = {};
+        let votingActive = false;
+        let hasVoted = {};
+        let votingInterval;
+        let isQuestionActive = false;
+
+        // Admin password for controlling the voting
+        const adminPassword = "admin123"; // You can change this as needed
+
+        function joinLobby() {
+            const name = document.getElementById("nameInput").value.trim();
+            if (name) {
+                participants.push(name);
+                document.getElementById("join-section").classList.add("hidden");
+                document.getElementById("lobby-container").classList.remove("hidden");
+
+                // Show participants in the lobby to the admin
+                updateLobby();
+            }
+        }
+
+        function updateLobby() {
+            const lobbyPlayers = document.getElementById("lobby-players");
+            lobbyPlayers.innerHTML = participants.join(', ');
+
+            const adminView = document.getElementById("lobby-admin-view");
+            adminView.innerHTML = "Players in Lobby: " + participants.join(', ');
+
+            // Only show admin controls if admin is logged in
+            const adminPasswordInput = prompt("Enter admin password to control voting (if admin)");
+            if (adminPasswordInput === adminPassword) {
+                document.getElementById("admin-controls").classList.remove("hidden");
+            }
+        }
+
+        function startNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                alert("All questions have been completed!");
+                return;
+            }
+
+            votingActive = true;
+            isQuestionActive = true;
+
+            // Show the current question
+            document.getElementById("question-container").classList.remove("hidden");
+            document.getElementById("current-question").innerText = questions[currentQuestionIndex];
+
+            // Hide lobby and admin controls, show the names container
+            document.getElementById("lobby-container").classList.add("hidden");
+            document.getElementById("admin-controls").classList.add("hidden");
+            document.getElementById("names-container").classList.remove("hidden");
+            document.getElementById("timer").classList.remove("hidden");
+
+            // Initialize votes and display names
+            fixedNames.forEach(name => {
+                votes[name] = 0;
+                hasVoted[name] = false;
+                const nameElement = document.createElement("div");
+                nameElement.className = "name";
+                nameElement.id = name;
+                nameElement.innerText = name;
+                nameElement.onclick = () => vote(name);
+                document.getElementById("names-container").appendChild(nameElement);
+            });
+
+            // Start voting timer
+            let timeLeft = 100; // 100 seconds
+            votingInterval = setInterval(() => {
+                document.getElementById("timer").innerText = `Time Left: ${timeLeft--}s`;
+
+                if (timeLeft < 0) {
+                    clearInterval(votingInterval);
+                    endVoting();
+                }
+            }, 1000);
+        }
+
+        function vote(person) {
+            if (votingActive && isQuestionActive && !hasVoted[person]) {
+                votes[person] += 1;
+                hasVoted[person] = true;
+                updateFontSize(person);
+                disableVoting();
+            } else if (hasVoted[person]) {
+                alert("You have already voted!");
+            }
+        }
+
+        function disableVoting() {
+            const nameElements = document.querySelectorAll(".name");
+            nameElements.forEach(element => {
+                if (!hasVoted[element.id]) {
+                    element.classList.add("disabled");
+                    element.onclick = null; // Disable click event
+                }
+            });
+        }
+
+        function updateFontSize(person) {
+            const element = document.getElementById(person);
+            const newSize = 16 + votes[person] * 5; // Increase font size based on votes
+            element.style.fontSize = newSize + "px";
+        }
+
+        function endVoting() {
+            votingActive = false;
+            isQuestionActive = false;
+            document.getElementById("timer").classList.add("hidden");
+
+            // Find the name with the highest votes
+            let maxVotes = -1;
+            let winner = "";
+            for (let name in votes) {
+                if (votes[name] > maxVotes) {
+                    maxVotes = votes[name];
+                    winner = name;
+                }
+            }
+
+            // Highlight the winner
+            const winnerElement = document.getElementById(winner);
+            winnerElement.classList.add("winner");
+
+            // Reset sizes after 5 seconds and prepare for the next question
+            setTimeout(() => {
+                resetVoting();
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    document.getElementById("admin-controls").classList.remove("hidden");
+                }
+            }, 5000);
+        }
+
+        function resetVoting() {
+            for (let name in votes) {
+                votes[name] = 0;
+                hasVoted[name] = false;
+                const nameElement = document.getElementById(name);
+                nameElement.style.fontSize = "16px";
+                nameElement.classList.remove("winner");
+                nameElement.classList.remove("disabled"); // Enable voting again
+                nameElement.onclick = () => vote(name); // Restore click event
+            }
+
+            // Prepare for the next round
+            document.getElementById("names-container").innerHTML = "";
+            document.getElementById("names-container").classList.add("hidden");
+            document.getElementById("question-container").classList.add("hidden");
+        }
+    </script>
+
+</body>
+</html>
